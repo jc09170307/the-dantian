@@ -8,6 +8,40 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="The Dantian">
 <meta name="theme-color" content="#7c3aed">
+<script>
+// Early-load settings toggle — must be available before body renders
+function toggleSettings(){
+  var el=document.getElementById('settings-overlay');
+  if(!el) return;
+  el.style.display=el.style.display==='none'?'block':'none';
+  var key=localStorage.getItem('jon-api-key');
+  var status=document.getElementById('api-status');
+  var inp=document.getElementById('api-key-input');
+  if(status){status.textContent=key?'✅ API key set':'⚠️ Not set';status.className='api-status '+(key?'set':'unset');}
+  if(inp){inp.placeholder=key?'Already saved — paste new key to update':'sk-ant-api03-...';}
+}
+function saveApiKey(){
+  var key=document.getElementById('api-key-input').value.trim();
+  if(!key){alert('Paste your API key first');return;}
+  if(!key.startsWith('sk-ant')){alert('Should start with sk-ant');return;}
+  localStorage.setItem('jon-api-key',key);
+  document.getElementById('api-key-input').value='';
+  toggleSettings();toggleSettings();
+  var t=document.getElementById('toast');
+  if(t){t.textContent='API key saved - all apps unlocked!';t.classList.add('show');setTimeout(function(){t.classList.remove('show')},3000);}
+}
+function clearApiKey(){
+  localStorage.removeItem('jon-api-key');
+  document.getElementById('api-key-input').value='';
+  toggleSettings();toggleSettings();
+}
+function toggleThemeFromSettings(){
+  var t=document.documentElement.getAttribute('data-theme');
+  var n=t==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',n);
+  localStorage.setItem('dantian-theme',n);
+}
+</script>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-512.png">
 <title>The Dantian 🏯</title>
@@ -276,40 +310,7 @@ function getGreeting(){
 }
 
 
-// ═══════════ SETTINGS ═══════════
-function toggleSettings(){
-  var el=document.getElementById('settings-overlay');
-  el.style.display=el.style.display==='none'?'block':'none';
-  updateApiStatus();
-}
-function updateApiStatus(){
-  var key=localStorage.getItem('jon-api-key');
-  var el=document.getElementById('api-status');
-  var inp=document.getElementById('api-key-input');
-  if(key){el.textContent='API key set';el.className='api-status set';inp.placeholder='Already saved';}
-  else{el.textContent='Not set';el.className='api-status unset';inp.placeholder='sk-ant-api03-...';}
-}
-function saveApiKey(){
-  var key=document.getElementById('api-key-input').value.trim();
-  if(!key){toast('Paste your API key first');return;}
-  if(!key.startsWith('sk-ant')){toast('Should start with sk-ant');return;}
-  localStorage.setItem('jon-api-key',key);
-  document.getElementById('api-key-input').value='';
-  updateApiStatus();
-  toast('API key saved - all apps unlocked!');
-}
-function clearApiKey(){
-  localStorage.removeItem('jon-api-key');
-  document.getElementById('api-key-input').value='';
-  updateApiStatus();
-  toast('API key cleared');
-}
-function toggleThemeFromSettings(){
-  var t=document.documentElement.getAttribute('data-theme');
-  var n=t==='dark'?'light':'dark';
-  document.documentElement.setAttribute('data-theme',n);
-  localStorage.setItem('dantian-theme',n);
-}
+// settings handled in early-load script
 
 function init(){
   var now=new Date();
