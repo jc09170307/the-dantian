@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="The Dantian">
+<meta name="theme-color" content="#7c3aed">
+<script>
+// Early-load settings toggle — must be available before body renders
+function toggleSettings(){
+  var el=document.getElementById('settings-overlay');
+  if(!el) return;
+  el.style.display=el.style.display==='none'?'block':'none';
+  var key=localStorage.getItem('jon-api-key');
+  var status=document.getElementById('api-status');
+  var inp=document.getElementById('api-key-input');
+  if(status){status.textContent=key?'✅ API key set':'⚠️ Not set';status.className='api-status '+(key?'set':'unset');}
+  if(inp){inp.placeholder=key?'Already saved — paste new key to update':'sk-ant-api03-...';}
+}
+function saveApiKey(){
+  var key=document.getElementById('api-key-input').value.trim();
+  if(!key){alert('Paste your API key first');return;}
+  if(!key.startsWith('sk-ant')){alert('Should start with sk-ant');return;}
+  localStorage.setItem('jon-api-key',key);
+  document.getElementById('api-key-input').value='';
+  toggleSettings();toggleSettings();
+  var t=document.getElementById('toast');
+  if(t){t.textContent='API key saved - all apps unlocked!';t.classList.add('show');setTimeout(function(){t.classList.remove('show')},3000);}
+}
+function clearApiKey(){
+  localStorage.removeItem('jon-api-key');
+  document.getElementById('api-key-input').value='';
+  toggleSettings();toggleSettings();
+}
+function toggleThemeFromSettings(){
+  var t=document.documentElement.getAttribute('data-theme');
+  var n=t==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',n);
+  localStorage.setItem('dantian-theme',n);
+}
+</script>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-512.png">
+<title>The Dantian 🏯</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+button,input,textarea,select{font-family:inherit;-webkit-appearance:none;appearance:none}
+:root{
+  --v:#7c3aed;--v2:#9f67f5;--v3:#c4a8fc;
+  --t:#0d9488;--t2:#14b8a6;
+  --g:#d97706;--g2:#fbbf24;
+  --bg:#09090f;--bg2:#0f0f1a;--bg3:#16162a;--bg4:#1c1c30;
+  --tx:#f0eeff;--tx2:#b0a8d0;--tx3:#6b6494;
+  --bd:rgba(124,58,237,.18);--bd2:rgba(124,58,237,.08);
+  --card:#0f0f1a;--hh:58px;
+}
+[data-theme="light"]{
+  --bg:#f5f3ff;--bg2:#fff;--bg3:#ede9fe;--bg4:#ddd6fe;
+  --tx:#1e1b4b;--tx2:#4c4777;--tx3:#8b80c0;
+  --bd:rgba(124,58,237,.2);--bd2:rgba(124,58,237,.08);--card:#fff;
+}
+html,body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;font-size:16px;min-height:100vh;overflow-x:hidden}
+body{padding-bottom:2rem}
+.hdr{height:var(--hh);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-bottom:1px solid var(--bd2);position:sticky;top:0;z-index:200;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hdr-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--tx);letter-spacing:-.2px}
+.hdr-sub{font-size:9px;color:var(--v2);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-top:1px}
+.theme-btn{background:var(--bg3);border:1px solid var(--bd);border-radius:20px;padding:5px 12px;font-size:13px;cursor:pointer;color:var(--tx2)}
+.slbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--v3);margin-bottom:.65rem;display:flex;align-items:center;gap:.4rem}
+.slbl::after{content:'';flex:1;height:1px;background:var(--bd)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:.9rem 1rem;margin-bottom:.65rem}
+.btn{width:100%;padding:.75rem 1rem;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.bp{background:var(--v);color:#fff}.bp:active{transform:scale(.98)}
+.bg{background:var(--bg3);color:var(--tx2);border:1px solid var(--bd)}.bg:active{background:var(--bg4)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--v);color:#fff;padding:.5rem 1.1rem;border-radius:100px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* GREETING */
+.greeting-wrap{padding:1.5rem 1rem 0}
+.greeting{font-family:'DM Serif Display',serif;font-size:26px;color:var(--tx);font-style:italic;line-height:1.2}
+.greeting-sub{font-size:14px;color:var(--tx3);margin-top:.35rem}
+.organ-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);border-radius:100px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--v3);margin-top:.6rem}
+
+/* APP GRID */
+.app-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;padding:0 1rem;margin-top:1rem}
+.app-tile{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:1rem;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .2s;text-decoration:none;display:block;position:relative;overflow:hidden}
+.app-tile:active{transform:scale(.97)}
+.app-tile-bg{position:absolute;inset:0;opacity:.06;font-size:80px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.app-tile-ico{font-size:30px;margin-bottom:.4rem}
+.app-tile-name{font-family:'DM Serif Display',serif;font-size:16px;color:var(--tx);line-height:1.2}
+.app-tile-sub{font-size:11px;color:var(--tx3);margin-top:3px;line-height:1.4}
+.app-tile-stat{font-size:13px;font-weight:700;margin-top:.5rem;color:var(--v2)}
+.app-tile.groove{border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.06)}
+.app-tile.zero{border-color:rgba(13,148,136,.3);background:rgba(13,148,136,.06)}
+.app-tile.needle{border-color:rgba(217,119,6,.3);background:rgba(217,119,6,.06)}
+.app-tile.lab{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.06)}
+.app-tile.glow{border-color:rgba(236,72,153,.3);background:rgba(236,72,153,.06)}
+
+/* STATUS STRIP */
+.status-strip{display:flex;gap:.5rem;padding:0 1rem;overflow-x:auto;scrollbar-width:none;margin-top:.25rem}
+.status-strip::-webkit-scrollbar{display:none}
+.status-chip{flex-shrink:0;background:var(--bg3);border:1px solid var(--bd);border-radius:100px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--tx2);white-space:nowrap}
+.status-chip.good{background:rgba(13,148,136,.15);border-color:rgba(13,148,136,.3);color:var(--t2)}
+.status-chip.warn{background:rgba(217,119,6,.15);border-color:rgba(217,119,6,.3);color:var(--g2)}
+.status-chip.alert{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171}
+
+/* BODY CLOCK STRIP */
+.clock-strip{padding:0 1rem;margin-top:1rem}
+.clock-bar{display:flex;border-radius:12px;overflow:hidden;height:10px;margin-bottom:.5rem}
+.clock-seg{flex:1;transition:opacity .3s}
+.clock-seg.active{opacity:1;box-shadow:0 0 8px currentColor}
+.clock-seg.past{opacity:.25}
+.clock-seg.future{opacity:.12}
+
+/* MOON STRIP */
+.moon-strip{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--card);border:1px solid var(--bd);border-radius:14px;margin:0 1rem .65rem}
+
+/* QUICK LOG */
+.ql-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+.ql-btn{background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:.65rem .4rem;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .2s;font-size:11px;font-weight:600;color:var(--tx2)}
+.ql-btn .qi{font-size:22px;display:block;margin-bottom:3px}
+.ql-btn:active{background:var(--bg4)}
+.ql-btn.done{background:rgba(13,148,136,.15);border-color:rgba(13,148,136,.3);color:var(--t2)}
+
+/* NOTES */
+.inp{width:100%;background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:.7rem .9rem;color:var(--tx);font-size:15px;transition:border-color .2s;resize:none}
+.inp:focus{outline:none;border-color:var(--v2)}
+.inp::placeholder{color:var(--tx3)}
+
+/* SETTINGS */
+.settings-wrap{padding:1rem}
+.settings-section{font-size:10px;font-weight:700;color:var(--v3);text-transform:uppercase;letter-spacing:.1em;margin:.85rem 0 .4rem;display:flex;align-items:center;gap:.4rem}
+.settings-section::after{content:'';flex:1;height:1px;background:var(--bd)}
+.api-card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1rem 1.1rem;margin-bottom:.65rem}
+.api-status{display:inline-flex;align-items:center;gap:.4rem;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:.65rem}
+.api-status.set{background:rgba(13,148,136,.15);color:var(--t2);border:1px solid rgba(13,148,136,.3)}
+.api-status.unset{background:rgba(217,119,6,.15);color:var(--g2);border:1px solid rgba(217,119,6,.3)}
+.api-input{width:100%;border:1.5px solid var(--bd);border-radius:10px;padding:.65rem .85rem;font-size:13px;background:var(--bg3);color:var(--tx);outline:none;font-family:'DM Sans',sans-serif;margin-bottom:.5rem;letter-spacing:.02em}
+.api-input:focus{border-color:var(--v)}
+.api-note{font-size:11px;color:var(--tx3);line-height:1.6;margin-top:.4rem}
+.api-note a{color:var(--v2)}
+.app-link-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.app-link-btn{padding:.6rem .5rem;border:1px solid var(--bd);border-radius:12px;background:var(--bg3);color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;text-align:center;text-decoration:none;display:block}
+
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<header class="hdr">
+  <div><div class="hdr-title">The Dantian 🏯</div><div class="hdr-sub">Qi Command Center</div></div>
+  <button class="theme-btn" onclick="toggleSettings()" style="margin-right:.4rem">⚙️</button>
+  <button class="theme-btn" id="theme-btn">☀️</button>
+</header>
+
+<div class="greeting-wrap">
+  <div class="greeting" id="greeting"></div>
+  <div class="greeting-sub" id="greeting-sub"></div>
+  <div id="organ-badge"></div>
+</div>
+
+<!-- STATUS STRIP -->
+<div class="status-strip" id="status-strip" style="margin-top:1rem"></div>
+
+<!-- BODY CLOCK -->
+<div class="clock-strip" style="margin-top:1rem">
+  <div class="slbl" style="padding:0">Body clock</div>
+  <div class="clock-bar" id="clock-bar"></div>
+  <div style="font-size:12px;color:var(--tx3)" id="clock-label"></div>
+</div>
+
+<!-- MOON -->
+<div class="moon-strip" id="moon-strip"></div>
+
+<!-- APP GRID -->
+<div style="padding:0 1rem;margin-top:.25rem"><div class="slbl">Your suite</div></div>
+<div class="app-grid" id="app-grid"></div>
+
+<!-- QUICK LOG -->
+<div style="padding:0 1rem;margin-top:.5rem">
+  <div class="slbl">Quick log</div>
+  <div class="card">
+    <div class="ql-grid" id="ql-grid"></div>
+  </div>
+</div>
+
+<!-- DAILY INTENTION -->
+<div style="padding:0 1rem">
+  <div class="slbl">Daily intention</div>
+  <div class="card">
+    <textarea class="inp" id="intention" placeholder="Today I intend to…" style="min-height:80px;margin-bottom:.65rem"></textarea>
+    <button class="btn bp" onclick="saveIntention()">Set intention</button>
+  </div>
+  <div id="saved-intention" style="display:none" class="card">
+    <div style="font-size:11px;font-weight:700;color:var(--v3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem">Today's intention</div>
+    <div style="font-size:16px;font-style:italic;color:var(--tx);line-height:1.6" id="intention-text"></div>
+  </div>
+</div>
+
+<!-- LINKS -->
+<div style="padding:0 1rem;margin-top:.5rem">
+  <div class="slbl">Quick links</div>
+  <div class="card">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+      <a href="https://jc09170307.github.io/groove-is-in-the-qi/" target="_blank" class="btn bp" style="text-decoration:none;text-align:center;font-size:13px">🎵 Groove</a>
+      <a href="https://jc09170307.github.io/zero-proof/" target="_blank" class="btn bg" style="text-decoration:none;text-align:center;font-size:13px">🌊 Zero Proof</a>
+      <a href="https://jc09170307.github.io/needle-and-know/" target="_blank" class="btn bg" style="text-decoration:none;text-align:center;font-size:13px">🪡 Needle & Know</a>
+      <a href="https://jc09170307.github.io/lab-report/" target="_blank" class="btn bg" style="text-decoration:none;text-align:center;font-size:13px">🔬 Lab Report</a>
+      <a href="https://jc09170307.github.io/glow-protocol/" target="_blank" class="btn bg" style="text-decoration:none;text-align:center;font-size:13px">✨ Glow</a>
+      <a href="https://jc09170307.github.io/jing-and-bling/" target="_blank" class="btn bg" style="text-decoration:none;text-align:center;font-size:13px">💸 Jing & Bling</a>
+      <a href="https://jc09170307.github.io/the-intake/" target="_blank" class="btn bg" style="text-decoration:none;text-align:center;font-size:13px">🩺 The Intake</a>
+      <a href="https://jc09170307.github.io/the-frame/" target="_blank" class="btn bg" style="text-decoration:none;text-align:center;font-size:13px">💃 The Frame</a>
+      <a href="https://jc09170307.github.io/shen-cinema/" target="_blank" class="btn bp" style="text-decoration:none;text-align:center;font-size:13px">🎬 Shen Cinema</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// THEME
+(function(){
+  var s=localStorage.getItem('dantian-theme');
+  if(s){document.documentElement.setAttribute('data-theme',s);return;}
+  document.documentElement.setAttribute('data-theme',window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+})();
+document.getElementById('theme-btn').addEventListener('click',function(){
+  var c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',n);localStorage.setItem('dantian-theme',n);
+  this.textContent=n==='dark'?'☀️':'🌙';
+});
+document.getElementById('theme-btn').textContent=document.documentElement.getAttribute('data-theme')==='dark'?'☀️':'🌙';
+
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+const CLOCK_ORGANS=[
+  {o:'Lung',a:'LU',h:[3,4],c:'#94a3b8',e:'🌬️',why:'Deep rest. Let the Lung cleanse.'},
+  {o:'Large Intestine',a:'LI',h:[5,6],c:'#94a3b8',e:'💨',why:'Rise and eliminate. Warm water first.'},
+  {o:'Stomach',a:'ST',h:[7,8],c:'#f59e0b',e:'🌾',why:'Eat a real breakfast. Best window all day.'},
+  {o:'Spleen',a:'SP',h:[9,10],c:'#f59e0b',e:'🌀',why:'Peak cognition. Study now.'},
+  {o:'Heart',a:'HT',h:[11,12],c:'#ef4444',e:'❤️',why:'Rest at noon. Connect with people.'},
+  {o:'Small Intestine',a:'SI',h:[13,14],c:'#ef4444',e:'🔥',why:'Sort and process. Walk after lunch.'},
+  {o:'Bladder',a:'BL',h:[15,16],c:'#3b82f6',e:'💧',why:'Drink water. Stretch the back.'},
+  {o:'Kidney',a:'KD',h:[17,18],c:'#3b82f6',e:'🫘',why:'Wind down. Protect Jing.'},
+  {o:'Pericardium',a:'PC',h:[19,20],c:'#8b5cf6',e:'💜',why:'Soften. Create safety for sleep.'},
+  {o:'Triple Warmer',a:'TW',h:[21,22],c:'#8b5cf6',e:'🔱',why:'Sleep window. Honor it.'},
+  {o:'Gallbladder',a:'GB',h:[23,0],c:'#10b981',e:'🌲',why:'Be asleep. Deep Yin begins.'},
+  {o:'Liver',a:'LV',h:[1,2],c:'#10b981',e:'🍃',why:'Sacred sleep. Liver cleanses your blood.'},
+];
+
+const MOON_PHASES=[
+  {n:'New Moon',e:'🌑',d:0},{n:'Waxing Crescent',e:'🌒',d:3},{n:'First Quarter',e:'🌓',d:7},
+  {n:'Waxing Gibbous',e:'🌔',d:10},{n:'Full Moon',e:'🌕',d:14},{n:'Waning Gibbous',e:'🌖',d:17},
+  {n:'Last Quarter',e:'🌗',d:21},{n:'Waning Crescent',e:'🌘',d:25}
+];
+
+const APPS=[
+  // Wave 1
+  {name:'Groove Is in the Qi',emoji:'🎵',sub:'Lifestyle · Dance · Sleep · Vibe',cls:'groove',url:'https://jc09170307.github.io/groove-is-in-the-qi/'},
+  {name:'Zero Proof Full Life',emoji:'🌊',sub:'Sobriety · Strength · Streak',cls:'zero',url:'https://jc09170307.github.io/zero-proof/'},
+  {name:'Needle & Know',emoji:'🪡',sub:'VUIM · Channels · Herbs · Study',cls:'needle',url:'https://jc09170307.github.io/needle-and-know/'},
+  {name:'The Lab Report',emoji:'🔬',sub:'Labs · Protocol · Care team',cls:'lab',url:'https://jc09170307.github.io/lab-report/'},
+  {name:'Glow Protocol',emoji:'✨',sub:'Skincare · CareCella · Routine',cls:'glow',url:'https://jc09170307.github.io/glow-protocol/'},
+  {name:'Jing & Bling',emoji:'💸',sub:'Finance · Budget · Student life',cls:'groove',url:'https://jc09170307.github.io/jing-and-bling/'},
+  {name:'The Intake',emoji:'🩺',sub:'Clinical journal · SOAP · Dx',cls:'needle',url:'https://jc09170307.github.io/the-intake/'},
+  {name:'The Frame',emoji:'💃',sub:'Dance training · Technique · Goals',cls:'zero',url:'https://jc09170307.github.io/the-frame/'},
+  {name:'Shen Cinema',emoji:'🎬',sub:'Dream journal · Yin Records',cls:'lab',url:'https://jc09170307.github.io/shen-cinema/'},
+  // Wave 2
+  {name:'Herb Your Enthusiasm',emoji:'🌿',sub:'SRS Flashcards · Points · Herbs · Hangul',cls:'needle',url:'https://jc09170307.github.io/herb-your-enthusiasm/'},
+  {name:'Tongue in Cheek',emoji:'😏',sub:'Daily tongue & pulse observation',cls:'lab',url:'https://jc09170307.github.io/tongue-in-cheek/'},
+  {name:'Qi-et Please',emoji:'🤫',sub:'Meditation · Qi Gong · Breathwork',cls:'groove',url:'https://jc09170307.github.io/qi-et-please/'},
+  {name:'Actually Though',emoji:'💭',sub:'Debate · Steelman · Deep Dive',cls:'zero',url:'https://jc09170307.github.io/actually-though/'},
+  {name:'What Brings You In',emoji:'🩺',sub:'AI Patient Interviews · Exam Prep',cls:'glow',url:'https://jc09170307.github.io/what-brings-you-in/'},
+  // Wave 3
+  {name:'This Is Fine',emoji:'🔥',sub:'Academic Planner · GPA · Hours',cls:'needle',url:'https://jc09170307.github.io/this-is-fine/'},
+];
+
+const QUICK_LOG=[
+  {id:'meds',e:'💊',l:'Meds'},
+  {id:'water',e:'💧',l:'Water'},
+  {id:'move',e:'💃',l:'Moved'},
+  {id:'journal',e:'📓',l:'Journal'},
+  {id:'glow',e:'✨',l:'Skincare'},
+  {id:'sober',e:'🌊',l:'Sober'},
+  {id:'study',e:'🪡',l:'Studied'},
+  {id:'gratitude',e:'🙏',l:'Grateful'},
+];
+
+function getMoon(){
+  var knm=new Date('2000-01-06T18:14:00Z');
+  var phase=(((new Date()-knm)/(1000*60*60*24))%29.53+29.53)%29.53;
+  return MOON_PHASES.reduce((b,p)=>Math.abs(phase-p.d)<Math.abs(phase-b.d)?p:b,MOON_PHASES[0]);
+}
+
+function getCurrentOrgan(){
+  var h=new Date().getHours();
+  return CLOCK_ORGANS.find(o=>o.h.includes(h))||CLOCK_ORGANS[0];
+}
+
+function getGreeting(){
+  var h=new Date().getHours();
+  if(h<5)return{g:'Still in Yin time,',s:'The Liver is working. Trust the process.'};
+  if(h<9)return{g:'Morning Qi, Jon.',s:'Eat breakfast. The Stomach is waiting.'};
+  if(h<12)return{g:'Good morning, Jon.',s:'Spleen peak — your mind is sharpest right now.'};
+  if(h<14)return{g:'Midday, Jon.',s:'Heart time. Rest your eyes. Connect.'};
+  if(h<17)return{g:'Afternoon, Jon.',s:'Bladder peak. Drink water. Stretch.'};
+  if(h<20)return{g:'Evening, Jon.',s:'Kidney time. Wind down. Protect your Jing.'};
+  if(h<22)return{g:'Good evening, Jon.',s:'Pericardium time. Create safety for sleep.'};
+  return{g:'Late night, Jon.',s:'Triple Warmer says: be in bed. Honor TW time.'};
+}
+
+
+// settings handled in early-load script
+
+function init(){
+  var now=new Date();
+  var h=new Date().getHours();
+  var gr=getGreeting();
+  document.getElementById('greeting').textContent=gr.g;
+  document.getElementById('greeting-sub').textContent=gr.s+' · '+now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+
+  var cur=getCurrentOrgan();
+  document.getElementById('organ-badge').innerHTML=`<span class="organ-badge">${cur.e} ${cur.o} time · ${cur.why}</span>`;
+
+  // Status strip
+  var qlKey='dantian-ql-'+now.toISOString().slice(0,10);
+  var ql=JSON.parse(localStorage.getItem(qlKey)||'{}');
+  var chips=[
+    {l:'💊 Meds',done:ql.meds},
+    {l:'🌊 Sober',done:ql.sober},
+    {l:'💧 Hydrated',done:ql.water},
+    {l:'💃 Moved',done:ql.move},
+  ];
+  document.getElementById('status-strip').innerHTML=chips.map(c=>
+    `<div class="status-chip${c.done?' good':''}">${c.l}${c.done?' ✓':''}</div>`
+  ).join('');
+
+  // Clock bar
+  var bar='';
+  CLOCK_ORGANS.forEach(o=>{
+    var isCur=o.h.includes(h);
+    var isPast=o.h[0]<h&&!isCur;
+    bar+=`<div class="clock-seg${isCur?' active':isPast?' past':' future'}" style="background:${o.c}" title="${o.o}"></div>`;
+  });
+  document.getElementById('clock-bar').innerHTML=bar;
+  document.getElementById('clock-label').textContent=cur.e+' '+cur.o+' · '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+
+  // Moon
+  var mp=getMoon();
+  document.getElementById('moon-strip').innerHTML=`
+    <div style="font-size:36px">${mp.e}</div>
+    <div>
+      <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--tx)">${mp.n}</div>
+      <div style="font-size:12px;color:var(--tx3);margin-top:2px">Lunar cycle · Qi flows with the moon</div>
+    </div>`;
+
+  // App grid
+  document.getElementById('app-grid').innerHTML=APPS.map(a=>
+    `<div cdiv class="app-tile ${a.cls}" onclick="location.href='/the-dantian/go.html?url='+encodeURIComponent(a.url)">
+      <div class="app-tile-bg">${a.emoji}</div>
+      <div class="app-tile-ico">${a.emoji}</div>
+      <div class="app-tile-name">${a.name}</div>
+      <div class="app-tile-sub">${a.sub}</div>
+    </div>`
+  ).join('');
+
+  // Quick log
+  var qlKey2='dantian-ql-'+now.toISOString().slice(0,10);
+  var ql2=JSON.parse(localStorage.getItem(qlKey2)||'{}');
+  document.getElementById('ql-grid').innerHTML=QUICK_LOG.map(q=>
+    `<div class="ql-btn${ql2[q.id]?' done':''}" onclick="togQL('${q.id}',this)">
+      <span class="qi">${q.e}</span>${q.l}
+    </div>`
+  ).join('');
+
+  // Intention
+  var todayInt=localStorage.getItem('dantian-int-'+now.toISOString().slice(0,10));
+  if(todayInt){
+    document.getElementById('saved-intention').style.display='block';
+    document.getElementById('intention-text').textContent=todayInt;
+  }
+}
+
+function togQL(id,el){
+  var key='dantian-ql-'+new Date().toISOString().slice(0,10);
+  var ql=JSON.parse(localStorage.getItem(key)||'{}');
+  ql[id]=!ql[id];localStorage.setItem(key,JSON.stringify(ql));
+  el.classList.toggle('done',ql[id]);
+  if(ql[id])toast('✓ Logged');
+  init();
+}
+
+function saveIntention(){
+  var val=document.getElementById('intention').value.trim();
+  if(!val){toast('Type an intention first');return;}
+  var key='dantian-int-'+new Date().toISOString().slice(0,10);
+  localStorage.setItem(key,val);
+  document.getElementById('saved-intention').style.display='block';
+  document.getElementById('intention-text').textContent=val;
+  document.getElementById('intention').value='';
+  toast('Intention set 🏯');
+}
+
+init();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('/the-dantian/sw.js').catch(e=>console.log(e)));
+}
+</script>
+
+<!-- SETTINGS OVERLAY -->
+<div id="settings-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto">
+  <div style="padding:.85rem 1rem;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:10">
+    <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--tx)">Settings ⚙️</div>
+    <button onclick="toggleSettings()" style="background:var(--bg3);border:1px solid var(--bd);border-radius:20px;padding:5px 14px;font-size:13px;cursor:pointer;color:var(--tx2)">Done</button>
+  </div>
+  <div class="settings-wrap">
+
+    <div class="settings-section">🤖 Claude API Key</div>
+    <div class="api-card">
+      <div class="api-status unset" id="api-status">⚠️ Not set</div>
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:.65rem;line-height:1.6">Your API key is stored <strong>only on this device</strong> in localStorage. It never touches GitHub or this chat. All your Claude-powered apps share it automatically.</div>
+      <input class="api-input" id="api-key-input" type="password" placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button class="btn bp" onclick="saveApiKey()" style="margin-bottom:.4rem">💾 Save API Key</button>
+      <button class="btn bg" onclick="clearApiKey()">🗑 Clear Key</button>
+      <div class="api-note">Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys. Recommended: set a $10/month spend limit in Billing.</div>
+    </div>
+
+    <div class="settings-section">🚀 Your Apps</div>
+    <div style="font-size:12px;color:var(--tx3);margin-bottom:.5rem">All apps on the same domain share your API key automatically.</div>
+    <div class="app-link-grid">
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/actually-though/'">💭 Actually Though</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/what-brings-you-in/'">🩺 What Brings You In</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/herb-your-enthusiasm/'">🌿 Herb Your Enthusiasm</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/tongue-in-cheek/'">😏 Tongue in Cheek</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/qi-et-please/'">🤫 Qi-et Please</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/groove-is-in-the-qi/'">🎵 Groove Is in the Qi</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/the-frame/'">💃 The Frame</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/the-intake/'">🩺 The Intake</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/shen-cinema/'">🎬 Shen Cinema</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/glow-protocol/'">✨ Glow Protocol</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/jing-and-bling/'">💸 Jing & Bling</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/lab-report/'">🔬 The Lab Report</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/needle-and-know/'">🪡 Needle & Know</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/zero-proof/'">🌊 Zero Proof Full Life</button>
+      <button class="app-link-btn" onclick="location.href='/the-dantian/go.html?url=https://jc09170307.github.io/this-is-fine/'">🔥 This Is Fine</button>
+    </div>
+
+    <div class="settings-section">🎨 Display</div>
+    <div class="api-card">
+      <button class="btn bg" onclick="toggleThemeFromSettings()">☀️ / 🌙 Toggle Theme</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
