@@ -223,6 +223,7 @@ const MOON_PHASES=[
 ];
 
 const APPS=[
+  // Wave 1
   {name:'Groove Is in the Qi',emoji:'🎵',sub:'Lifestyle · Dance · Sleep · Vibe',cls:'groove',url:'https://jc09170307.github.io/groove-is-in-the-qi/'},
   {name:'Zero Proof Full Life',emoji:'🌊',sub:'Sobriety · Strength · Streak',cls:'zero',url:'https://jc09170307.github.io/zero-proof-full-life/'},
   {name:'Needle & Know',emoji:'🪡',sub:'VUIM · Channels · Herbs · Study',cls:'needle',url:'https://jc09170307.github.io/needle-and-know/'},
@@ -232,6 +233,12 @@ const APPS=[
   {name:'The Intake',emoji:'🩺',sub:'Clinical journal · SOAP · Dx',cls:'needle',url:'https://jc09170307.github.io/the-intake/'},
   {name:'The Frame',emoji:'💃',sub:'Dance training · Technique · Goals',cls:'zero',url:'https://jc09170307.github.io/the-frame/'},
   {name:'Shen Cinema',emoji:'🎬',sub:'Dream journal · Yin Records',cls:'lab',url:'https://jc09170307.github.io/shen-cinema/'},
+  // Wave 2
+  {name:'Herb Your Enthusiasm',emoji:'🌿',sub:'SRS Flashcards · Points · Herbs · Hangul',cls:'needle',url:'https://jc09170307.github.io/herb-your-enthusiasm/'},
+  {name:'Tongue in Cheek',emoji:'😏',sub:'Daily tongue & pulse observation',cls:'lab',url:'https://jc09170307.github.io/tongue-in-cheek/'},
+  {name:'Qi-et Please',emoji:'🤫',sub:'Meditation · Qi Gong · Breathwork',cls:'groove',url:'https://jc09170307.github.io/qi-et-please/'},
+  {name:'Actually Though',emoji:'💭',sub:'Debate · Steelman · Deep Dive',cls:'zero',url:'https://jc09170307.github.io/actually-though/'},
+  {name:'What Brings You In',emoji:'🩺',sub:'AI Patient Interviews · Exam Prep',cls:'glow',url:'https://jc09170307.github.io/what-brings-you-in/'},
 ];
 
 const QUICK_LOG=[
@@ -412,13 +419,13 @@ if('serviceWorker' in navigator){
 <script>
 
 // ═══ SETTINGS ═══
-function toggleSettings(){
+window.toggleSettings = function toggleSettings(){
   var el=document.getElementById('settings-overlay');
   el.style.display=el.style.display==='none'?'block':'none';
   updateApiStatus();
 }
 
-function updateApiStatus(){
+window.updateApiStatus = function updateApiStatus(){
   var key=localStorage.getItem('jon-api-key');
   var el=document.getElementById('api-status');
   var input=document.getElementById('api-key-input');
@@ -433,7 +440,7 @@ function updateApiStatus(){
   }
 }
 
-function saveApiKey(){
+window.saveApiKey = function saveApiKey(){
   var key=document.getElementById('api-key-input').value.trim();
   if(!key){toast('Paste your API key first');return;}
   if(!key.startsWith('sk-ant')){toast('That doesn't look right — should start with sk-ant');return;}
@@ -443,14 +450,14 @@ function saveApiKey(){
   toast('API key saved ✓ All apps now unlocked');
 }
 
-function clearApiKey(){
+window.clearApiKey = function clearApiKey(){
   localStorage.removeItem('jon-api-key');
   document.getElementById('api-key-input').value='';
   updateApiStatus();
   toast('API key cleared');
 }
 
-function toggleThemeFromSettings(){
+window.toggleThemeFromSettings = function toggleThemeFromSettings(){
   var t=document.documentElement.getAttribute('data-theme');
   document.documentElement.setAttribute('data-theme',t==='dark'?'light':'dark');
   localStorage.setItem('dantian-theme',t==='dark'?'light':'dark');
