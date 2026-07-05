@@ -275,6 +275,42 @@ function getGreeting(){
   return{g:'Late night, Jon.',s:'Triple Warmer says: be in bed. Honor TW time.'};
 }
 
+
+// ═══════════ SETTINGS ═══════════
+function toggleSettings(){
+  var el=document.getElementById('settings-overlay');
+  el.style.display=el.style.display==='none'?'block':'none';
+  updateApiStatus();
+}
+function updateApiStatus(){
+  var key=localStorage.getItem('jon-api-key');
+  var el=document.getElementById('api-status');
+  var inp=document.getElementById('api-key-input');
+  if(key){el.textContent='API key set';el.className='api-status set';inp.placeholder='Already saved';}
+  else{el.textContent='Not set';el.className='api-status unset';inp.placeholder='sk-ant-api03-...';}
+}
+function saveApiKey(){
+  var key=document.getElementById('api-key-input').value.trim();
+  if(!key){toast('Paste your API key first');return;}
+  if(!key.startsWith('sk-ant')){toast('Should start with sk-ant');return;}
+  localStorage.setItem('jon-api-key',key);
+  document.getElementById('api-key-input').value='';
+  updateApiStatus();
+  toast('API key saved - all apps unlocked!');
+}
+function clearApiKey(){
+  localStorage.removeItem('jon-api-key');
+  document.getElementById('api-key-input').value='';
+  updateApiStatus();
+  toast('API key cleared');
+}
+function toggleThemeFromSettings(){
+  var t=document.documentElement.getAttribute('data-theme');
+  var n=t==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',n);
+  localStorage.setItem('dantian-theme',n);
+}
+
 function init(){
   var now=new Date();
   var h=new Date().getHours();
@@ -416,53 +452,5 @@ if('serviceWorker' in navigator){
   </div>
 </div>
 
-<script>
-
-// ═══ SETTINGS ═══
-window.toggleSettings = function toggleSettings(){
-  var el=document.getElementById('settings-overlay');
-  el.style.display=el.style.display==='none'?'block':'none';
-  updateApiStatus();
-}
-
-window.updateApiStatus = function updateApiStatus(){
-  var key=localStorage.getItem('jon-api-key');
-  var el=document.getElementById('api-status');
-  var input=document.getElementById('api-key-input');
-  if(key){
-    el.textContent='✅ API key set';
-    el.className='api-status set';
-    input.placeholder='••••••••••••••••••••••';
-  } else {
-    el.textContent='⚠️ Not set';
-    el.className='api-status unset';
-    input.placeholder='sk-ant-api03-...';
-  }
-}
-
-window.saveApiKey = function saveApiKey(){
-  var key=document.getElementById('api-key-input').value.trim();
-  if(!key){toast('Paste your API key first');return;}
-  if(!key.startsWith('sk-ant')){toast('That doesn't look right — should start with sk-ant');return;}
-  localStorage.setItem('jon-api-key',key);
-  document.getElementById('api-key-input').value='';
-  updateApiStatus();
-  toast('API key saved ✓ All apps now unlocked');
-}
-
-window.clearApiKey = function clearApiKey(){
-  localStorage.removeItem('jon-api-key');
-  document.getElementById('api-key-input').value='';
-  updateApiStatus();
-  toast('API key cleared');
-}
-
-window.toggleThemeFromSettings = function toggleThemeFromSettings(){
-  var t=document.documentElement.getAttribute('data-theme');
-  document.documentElement.setAttribute('data-theme',t==='dark'?'light':'dark');
-  localStorage.setItem('dantian-theme',t==='dark'?'light':'dark');
-}
-
-</script>
 </body>
 </html>
