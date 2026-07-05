@@ -97,12 +97,29 @@ body{padding-bottom:2rem}
 .inp{width:100%;background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:.7rem .9rem;color:var(--tx);font-size:15px;transition:border-color .2s;resize:none}
 .inp:focus{outline:none;border-color:var(--v2)}
 .inp::placeholder{color:var(--tx3)}
+
+/* SETTINGS */
+.settings-wrap{padding:1rem}
+.settings-section{font-size:10px;font-weight:700;color:var(--v3);text-transform:uppercase;letter-spacing:.1em;margin:.85rem 0 .4rem;display:flex;align-items:center;gap:.4rem}
+.settings-section::after{content:'';flex:1;height:1px;background:var(--bd)}
+.api-card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1rem 1.1rem;margin-bottom:.65rem}
+.api-status{display:inline-flex;align-items:center;gap:.4rem;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:.65rem}
+.api-status.set{background:rgba(13,148,136,.15);color:var(--t2);border:1px solid rgba(13,148,136,.3)}
+.api-status.unset{background:rgba(217,119,6,.15);color:var(--g2);border:1px solid rgba(217,119,6,.3)}
+.api-input{width:100%;border:1.5px solid var(--bd);border-radius:10px;padding:.65rem .85rem;font-size:13px;background:var(--bg3);color:var(--tx);outline:none;font-family:'DM Sans',sans-serif;margin-bottom:.5rem;letter-spacing:.02em}
+.api-input:focus{border-color:var(--v)}
+.api-note{font-size:11px;color:var(--tx3);line-height:1.6;margin-top:.4rem}
+.api-note a{color:var(--v2)}
+.app-link-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.app-link-btn{padding:.6rem .5rem;border:1px solid var(--bd);border-radius:12px;background:var(--bg3);color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;text-align:center;text-decoration:none;display:block}
+
 </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
 <header class="hdr">
   <div><div class="hdr-title">The Dantian 🏯</div><div class="hdr-sub">Qi Command Center</div></div>
+  <button class="theme-btn" onclick="toggleSettings()" style="margin-right:.4rem">⚙️</button>
   <button class="theme-btn" id="theme-btn">☀️</button>
 </header>
 
@@ -345,6 +362,100 @@ init();
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('/the-dantian/sw.js').catch(e=>console.log(e)));
 }
+</script>
+
+<!-- SETTINGS OVERLAY -->
+<div id="settings-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto">
+  <div style="padding:.85rem 1rem;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:10">
+    <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--tx)">Settings ⚙️</div>
+    <button onclick="toggleSettings()" style="background:var(--bg3);border:1px solid var(--bd);border-radius:20px;padding:5px 14px;font-size:13px;cursor:pointer;color:var(--tx2)">Done</button>
+  </div>
+  <div class="settings-wrap">
+
+    <div class="settings-section">🤖 Claude API Key</div>
+    <div class="api-card">
+      <div class="api-status unset" id="api-status">⚠️ Not set</div>
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:.65rem;line-height:1.6">Your API key is stored <strong>only on this device</strong> in localStorage. It never touches GitHub or this chat. All your Claude-powered apps share it automatically.</div>
+      <input class="api-input" id="api-key-input" type="password" placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button class="btn bp" onclick="saveApiKey()" style="margin-bottom:.4rem">💾 Save API Key</button>
+      <button class="btn bg" onclick="clearApiKey()">🗑 Clear Key</button>
+      <div class="api-note">Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys. Recommended: set a $10/month spend limit in Billing.</div>
+    </div>
+
+    <div class="settings-section">🚀 Your Apps</div>
+    <div style="font-size:12px;color:var(--tx3);margin-bottom:.5rem">All apps on the same domain share your API key automatically.</div>
+    <div class="app-link-grid">
+      <a href="/actually-though/" class="app-link-btn">💭 Actually Though</a>
+      <a href="/what-brings-you-in/" class="app-link-btn">🩺 What Brings You In</a>
+      <a href="/herb-your-enthusiasm/" class="app-link-btn">🌿 Herb Your Enthusiasm</a>
+      <a href="/tongue-in-cheek/" class="app-link-btn">😏 Tongue in Cheek</a>
+      <a href="/qi-et-please/" class="app-link-btn">🤫 Qi-et Please</a>
+      <a href="/groove-is-in-the-qi/" class="app-link-btn">🎵 Groove Is in the Qi</a>
+      <a href="/the-frame/" class="app-link-btn">💃 The Frame</a>
+      <a href="/the-intake/" class="app-link-btn">🩺 The Intake</a>
+      <a href="/shen-cinema/" class="app-link-btn">🎬 Shen Cinema</a>
+      <a href="/glow-protocol/" class="app-link-btn">✨ Glow Protocol</a>
+      <a href="/jing-and-bling/" class="app-link-btn">💸 Jing & Bling</a>
+      <a href="/the-lab-report/" class="app-link-btn">🔬 The Lab Report</a>
+      <a href="/needle-and-know/" class="app-link-btn">🪡 Needle & Know</a>
+      <a href="/zero-proof-full-life/" class="app-link-btn">🌊 Zero Proof Full Life</a>
+    </div>
+
+    <div class="settings-section">🎨 Display</div>
+    <div class="api-card">
+      <button class="btn bg" onclick="toggleThemeFromSettings()">☀️ / 🌙 Toggle Theme</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+// ═══ SETTINGS ═══
+function toggleSettings(){
+  var el=document.getElementById('settings-overlay');
+  el.style.display=el.style.display==='none'?'block':'none';
+  updateApiStatus();
+}
+
+function updateApiStatus(){
+  var key=localStorage.getItem('jon-api-key');
+  var el=document.getElementById('api-status');
+  var input=document.getElementById('api-key-input');
+  if(key){
+    el.textContent='✅ API key set';
+    el.className='api-status set';
+    input.placeholder='••••••••••••••••••••••';
+  } else {
+    el.textContent='⚠️ Not set';
+    el.className='api-status unset';
+    input.placeholder='sk-ant-api03-...';
+  }
+}
+
+function saveApiKey(){
+  var key=document.getElementById('api-key-input').value.trim();
+  if(!key){toast('Paste your API key first');return;}
+  if(!key.startsWith('sk-ant')){toast('That doesn't look right — should start with sk-ant');return;}
+  localStorage.setItem('jon-api-key',key);
+  document.getElementById('api-key-input').value='';
+  updateApiStatus();
+  toast('API key saved ✓ All apps now unlocked');
+}
+
+function clearApiKey(){
+  localStorage.removeItem('jon-api-key');
+  document.getElementById('api-key-input').value='';
+  updateApiStatus();
+  toast('API key cleared');
+}
+
+function toggleThemeFromSettings(){
+  var t=document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute('data-theme',t==='dark'?'light':'dark');
+  localStorage.setItem('dantian-theme',t==='dark'?'light':'dark');
+}
+
 </script>
 </body>
 </html>
